@@ -1,0 +1,40 @@
+def generate_key_matrix(key):
+    alphabet = "ABCDEFGHIKLMNOPQRSTUVWXYZ"  # 'J' is excluded
+    key = "".join(dict.fromkeys(key.upper().replace("J", "I") + alphabet))
+    return [key[i:i+5] for i in range(0, 25, 5)]
+
+def find_position(matrix, char):
+    for i, row in enumerate(matrix):
+        if char in row:
+            return i, row.index(char)
+
+def playfair_cipher(text, key, mode="encrypt"):
+    text = text.upper().replace("J", "I").replace(" ", "")
+    if len(text) % 2 != 0:
+        text += "X"  # Padding for odd-length text
+    matrix = generate_key_matrix(key)
+    result = ""
+    step = 1 if mode == "encrypt" else -1
+
+    for i in range(0, len(text), 2):
+        a, b = text[i], text[i+1]
+        r1, c1 = find_position(matrix, a)
+        r2, c2 = find_position(matrix, b)
+
+        if r1 == r2:  # Same row
+            result += matrix[r1][(c1 + step) % 5] + matrix[r2][(c2 + step) % 5]
+        elif c1 == c2:  # Same column
+            result += matrix[(r1 + step) % 5][c1] + matrix[(r2 + step) % 5][c2]
+        else:  # Rectangle swap
+            result += matrix[r1][c2] + matrix[r2][c1]
+
+    return result
+
+# Example usage:
+key = "playfair example"
+plaintext = "hello world"
+ciphertext = playfair_cipher(plaintext, key, "encrypt")
+decrypted = playfair_cipher(ciphertext, key, "decrypt")
+
+print("Encrypted:", ciphertext)
+print("Decrypted:", decrypted)

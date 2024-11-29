@@ -1,0 +1,13 @@
+import hashlib
+
+def md5_hash(message):
+ 
+    md5 = hashlib.md5()
+ 
+    md5.update(message.encode('utf-8'))
+
+    return md5.hexdigest()
+
+message = input("Enter a message to hash using MD5: ")
+hashed_message = md5_hash(message)
+print(f"MD5 Hash: {hashed_message}")
